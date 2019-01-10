@@ -2,9 +2,12 @@
 from mitmproxy import ctx
 from mitmproxy.http import HTTPResponse
 from mitmproxy.net.http import Headers
+import mitmproxy
+from struct import *
 
 from io import StringIO
 import subprocess
+import winreg
 
 class Proxy:
     def __init__(self):
@@ -14,7 +17,8 @@ class Proxy:
         self.stdout = open("test", "w+")
 
     def sendrequest(self):
-        self.pid = subprocess.Popen(["python", "send_request.py", f"{self.test_endpoint}"], stdout=self.stdout)
+        self.pid = subprocess.Popen(["python", "send_request.py", f"{self.test_endpoint}"], \
+            stdout=self.stdout)
 
     def response(self, flow):
         if flow.request.host == self.test_endpoint_host:
@@ -23,6 +27,9 @@ class Proxy:
 
     def running(self):
         self.sendrequest()
+
+    # def done(self):
+    #     winreg.SetValueEx(key, "DefaultConnectionSettings", None, regtype, self.original_register)
 
     def get_test_output(self):
         self.stdout.flush()
